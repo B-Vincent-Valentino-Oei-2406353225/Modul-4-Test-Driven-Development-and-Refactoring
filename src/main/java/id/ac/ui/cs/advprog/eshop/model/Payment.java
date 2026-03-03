@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import id.ac.ui.cs.advprog.eshop.enums.PaymentMethod;
 import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,27 +19,16 @@ public class Payment {
     
     public Payment(String id, String method, String status, Map<String, String> paymentData) {
         this.id = id;
-        this.method = method;
+        setMethod(method);
+        setStatus(status);
+        setPaymentData(paymentData);
+    }
 
-        String[] validMethod = {"INITIAL"};
-        if (Arrays.asList(validMethod).stream().noneMatch(e->(e.equals(method)))) {
+    public void setMethod(String method) {
+        if (!PaymentMethod.contains(method)) {
             throw new IllegalArgumentException();
         } else {
             this.method = method;
-        }
-
-        setStatus(status);
-        
-        Map<String, List<String>> validPaymentData = Map.of(
-            "INITIAL", List.of("cardNumber")
-        );
-        if (paymentData == null || 
-            paymentData.isEmpty() || 
-            validPaymentData.get(method).stream().anyMatch(e->(!paymentData.containsKey(e)))
-        ) {
-            throw new IllegalArgumentException();
-        } else {
-            this.paymentData = paymentData;
         }
     }
 
@@ -47,6 +37,15 @@ public class Payment {
             throw new IllegalArgumentException();
         } else {
             this.status = status;
+        }
+    }
+
+    public void setPaymentData(Map<String,String> paymentData) {
+        List<String> requiredPaymentData = PaymentMethod.valueOf(this.method).getRequiredPaymentData();
+        if (paymentData != null && requiredPaymentData.stream().allMatch(e -> paymentData.containsKey(e))) {
+            this.paymentData = paymentData;
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 }
