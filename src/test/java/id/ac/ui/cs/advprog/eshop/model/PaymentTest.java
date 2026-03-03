@@ -3,6 +3,8 @@ package id.ac.ui.cs.advprog.eshop.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,17 +36,17 @@ class PaymentTest {
 
     @Test
     void testCreatePaymentDefault() {
-        Payment payment = new Payment("eb558e9f-1c39-460e-8860-71af6af63bd6", "INITIAL", "PENDING", paymentData);
+        Payment payment = new Payment("eb558e9f-1c39-460e-8860-71af6af63bd6", "INITIAL", PaymentStatus.PENDING.getValue(), paymentData);
         assertEquals("eb558e9f-1c39-460e-8860-71af6af63bd6", payment.getId());
         assertEquals("INITIAL", payment.getMethod());
-        assertEquals("PENDING", payment.getStatus());
+        assertEquals(PaymentStatus.PENDING.getValue(), payment.getStatus());
         assertSame(paymentData, payment.getPaymentData());
     }
 
     @Test
     void testCreatePaymentNullData() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Payment payment = new Payment("eb558e9f-1c39-460e-8860-71af6af63bd6", "INITIAL", "WAITING_PAYMENT", null);
+            Payment payment = new Payment("eb558e9f-1c39-460e-8860-71af6af63bd6", "INITIAL", PaymentStatus.PENDING.getValue(), null);
         });
     }
 
@@ -58,20 +60,20 @@ class PaymentTest {
     @Test
     void testCreatePaymentInvalidMethod() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Payment payment = new Payment("eb558e9f-1c39-460e-8860-71af6af63bd6", "INVALID_METHOD", "WAITING_PAYMENT", paymentData);
+            Payment payment = new Payment("eb558e9f-1c39-460e-8860-71af6af63bd6", "INVALID_METHOD", PaymentStatus.PENDING.getValue(), paymentData);
         });
     }
 
     @Test
     void testSetStatus() {
-        Payment payment = new Payment("eb558e9f-1c39-460e-8860-71af6af63bd6", "INITIAL", "PENDING", paymentData);
-        payment.setStatus("SUCCESS");
-        assertEquals("SUCCESS", payment.getStatus());
+        Payment payment = new Payment("eb558e9f-1c39-460e-8860-71af6af63bd6", "INITIAL", PaymentStatus.PENDING.getValue(), paymentData);
+        payment.setStatus(PaymentStatus.SUCCESS.getValue());
+        assertEquals(PaymentStatus.SUCCESS.getValue(), payment.getStatus());
     }
 
     @Test
     void testSetStatusInvalid() {
-        Payment payment = new Payment("eb558e9f-1c39-460e-8860-71af6af63bd6", "INITIAL", "PENDING", paymentData);
+        Payment payment = new Payment("eb558e9f-1c39-460e-8860-71af6af63bd6", "INITIAL", PaymentStatus.SUCCESS.getValue(), paymentData);
         assertThrows(IllegalArgumentException.class, () -> {
             payment.setStatus("INVALID_STATUS");
         });

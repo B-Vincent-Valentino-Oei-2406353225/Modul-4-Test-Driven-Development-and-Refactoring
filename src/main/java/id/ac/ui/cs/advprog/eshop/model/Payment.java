@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,12 +27,7 @@ public class Payment {
             this.method = method;
         }
 
-        String[] validStatus = {"PENDING", "REJECTED", "SUCCESS"};
-        if (Arrays.asList(validStatus).stream().noneMatch(e->(e.equals(status)))) {
-            throw new IllegalArgumentException();
-        } else {
-            this.status = status;
-        }
+        setStatus(status);
         
         Map<String, List<String>> validPaymentData = Map.of(
             "INITIAL", List.of("cardNumber")
@@ -47,8 +43,7 @@ public class Payment {
     }
 
     public void setStatus(String status) {
-        String[] validStatus = {"PENDING", "REJECTED", "SUCCESS"};
-        if (Arrays.asList(validStatus).stream().noneMatch(e->(e.equals(status)))) {
+        if (!PaymentStatus.contains(status)) {
             throw new IllegalArgumentException();
         } else {
             this.status = status;
