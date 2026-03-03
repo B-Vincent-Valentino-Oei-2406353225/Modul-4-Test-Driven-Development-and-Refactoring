@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +34,7 @@ public class PaymentServiceImplTest {
 	PaymentRepository paymentRepository;
 
 	List<Payment> payments;
+	List<Order> orders;
 
 	@BeforeEach
 	void setUp() {
@@ -45,7 +45,7 @@ public class PaymentServiceImplTest {
 		product1.setProductQuantity(2);
 		products.add(product1);
 
-		List<Order> orders = new ArrayList<>();
+		orders = new ArrayList<>();
 		Order order1 = new Order("13652556-012a-4c07-b546-54eb1396d79b",
 				products, 1708560000L, "Safira Sudrajat");
 		orders.add(order1);
@@ -61,19 +61,35 @@ public class PaymentServiceImplTest {
 
 	@Test
 	void testAddPayment() {
-        Payment payment = payments.get(1);
-        doReturn(payment).when(paymentRepository).save(any(Payment.class));
+		Order order = orders.get(1);
+		doReturn(null).when(paymentRepository).findById(order.getId());
+
+		Payment result = paymentService.addPayment(
+				order,
+				PaymentMethod.INITIAL.getValue(),
+				Map.of("cardNumber", "1234567890123456")
+		);
+
+		assertNotNull(result);
+		assertEquals(order.getId(), result.getId());
+		assertEquals(PaymentStatus.PENDING.getValue(), result.getStatus());
+		verify(paymentRepository, times(1)).save(any(Payment.class));
 	}
 
 	@Test
 	void testAddPaymentIfAlreadyExist() {
-        Payment payment = payments.get(1);
-        doReturn(payment).when(paymentRepository).findById(payment.getId());
+		Order order = orders.get(1);
+		Payment existingPayment = payments.get(1);
+		doReturn(existingPayment).when(paymentRepository).findById(order.getId());
 
-        assertThrows(IllegalArgumentException.class,
-                () -> paymentService.addPayment(null, PaymentMethod.INITIAL.getValue(), Map.of("cardNumber", "1234567890123456")));
+		Payment result = paymentService.addPayment(
+				order,
+				PaymentMethod.INITIAL.getValue(),
+				Map.of("cardNumber", "1234567890123456")
+		);
 
-        verify(paymentRepository, times(0)).save(any(Payment.class));
+		assertNull(result);
+		verify(paymentRepository, times(0)).save(any(Payment.class));
 	}
 
 	@Test
@@ -101,7 +117,7 @@ public class PaymentServiceImplTest {
 	void testUpdateStatusInvalidPayment() {
         doReturn(null).when(paymentRepository).findById("non-existent-id");
 
-        assertThrows(NoSuchElementException.class,
+	assertThrows(IllegalArgumentException.class,
                 () -> paymentService.setStatus(new Payment("non-existent-id", PaymentMethod.INITIAL.getValue(), PaymentStatus.PENDING.getValue(), Map.of("cardNumber", "1234567890123456")), PaymentStatus.SUCCESS.getValue()));
 
         verify(paymentRepository, times(0)).save(any(Payment.class));
@@ -126,9 +142,7 @@ public class PaymentServiceImplTest {
 
 	@Test
 	void testFindAll() {
-        for (Payment payment : payments) {
-            paymentRepository.save(payment);
-        }
+	doReturn(payments).when(paymentRepository).findAll();
 
         List<Payment> paymentList = paymentService.getAllPayments();
         assertEquals(3, paymentList.size());
