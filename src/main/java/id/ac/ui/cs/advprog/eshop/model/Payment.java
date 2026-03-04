@@ -1,7 +1,5 @@
 package id.ac.ui.cs.advprog.eshop.model;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import id.ac.ui.cs.advprog.eshop.enums.PaymentMethod;
@@ -40,12 +38,11 @@ public class Payment {
         }
     }
 
-    public void setPaymentData(Map<String,String> paymentData) {
-        List<String> requiredPaymentData = PaymentMethod.valueOf(this.method).getRequiredPaymentData();
-        if (paymentData != null && requiredPaymentData.stream().allMatch(e -> paymentData.containsKey(e))) {
-            this.paymentData = paymentData;
-        } else {
+    public void setPaymentData(Map<String, String> paymentData) {
+        if (paymentData == null) {
             throw new IllegalArgumentException();
+        } else {
+            this.paymentData = paymentData;
         }
     }
 }
