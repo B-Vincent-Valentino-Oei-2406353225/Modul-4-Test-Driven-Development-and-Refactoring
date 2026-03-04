@@ -1,3 +1,13 @@
+# Modul 4
+Reflection:
+
+1. Setelah mengikuti alur Test-Driven Development (TDD) di latihan ini, menurut saya pendekatan TDD cukup membantu. Dengan menulis test dulu, saya jadi lebih jelas mendefinisikan behavior yang diharapkan sebelum menulis implementasi. Siklus red-green-refactor juga membuat proses pengerjaan lebih terstruktur karena saya bisa fokus menyelesaikan masalah kecil satu per satu. Selain itu, saat ada perubahan kode, saya bisa lebih cepat mendeteksi regresi lewat test yang sudah ada.  
+Namun setelah refleksi, saya merasa masih perlu meningkatkan kualitas test dari sisi cakupan skenario. Ke depannya, saya perlu lebih disiplin menambahkan edge case dan negative case sejak awal, tidak hanya skenario utama. Saya juga perlu lebih rutin melakukan refactor pada test code supaya tetap rapi, tidak duplikatif, dan mudah dipahami saat dibaca ulang.
+
+2. Menurut saya, unit test yang saya buat sudah cukup mengikuti prinsip F.I.R.S.T., walaupun belum sempurna. Dari sisi Fast, test sudah cepat karena dependency utama sudah dimock. Dari sisi Independent dan Repeatable, masing-masing test sudah berdiri sendiri dan hasilnya konsisten ketika dijalankan berulang. Dari sisi Self-validating, test juga sudah jelas karena menggunakan assertion yang langsung menunjukkan pass/fail. Dari sisi Thorough/Timely, test dibuat mengikuti alur TDD dan mencakup semua happy dan unhappy path, jadi test ditulis lebih dulu sebagai acuan implementasi.
+Meski begitu, masih ada hal yang bisa ditingkatkan. Ke depan saya ingin membuat nama test lebih deskriptif, mengurangi dependency pada detail implementasi, dan menambah testing pada edge cases agar kualitas sistem lebih baik.
+
+
 # Modul 3
 Reflection:
 1. Daftar hal yang saya ubah untuk menerapkan SOLID:
