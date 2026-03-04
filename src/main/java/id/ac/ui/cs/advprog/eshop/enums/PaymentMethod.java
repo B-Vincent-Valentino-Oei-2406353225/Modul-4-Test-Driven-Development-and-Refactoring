@@ -1,19 +1,15 @@
 package id.ac.ui.cs.advprog.eshop.enums;
 
-import java.util.List;
-
 import lombok.Getter;
 
 @Getter
 public enum PaymentMethod {
-    INITIAL("INITIAL", List.of()),
-    VOUCHER("VOUCHER", List.of());
+    INITIAL("INITIAL"),
+    VOUCHER("VOUCHER");
 
     private final String value;
-    private final List<String> requiredPaymentData;
-    PaymentMethod(String value, List<String> requiredPaymentData) {
+    PaymentMethod(String value) {
         this.value = value;
-        this.requiredPaymentData = requiredPaymentData;
     }
 
     public static boolean contains(String param) {
@@ -23,9 +19,5 @@ public enum PaymentMethod {
             }
         }
         return false;
-    }
-
-    public List<String> getRequiredPaymentData() {
-        return this.requiredPaymentData;
     }
 }
