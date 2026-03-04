@@ -138,6 +138,52 @@ public class PaymentServiceImplTest {
     }
 
 	@Test
+	void testAddPaymentCashOnDelivery() {
+		Order order = orders.get(1);
+		doReturn(null).when(paymentRepository).findById(order.getId());
+
+		Payment result = paymentService.addPayment(
+				order,
+				PaymentMethod.CASH_ON_DELIVERY.getValue(),
+				Map.of("address", "Jl. Merdeka No. 123", 
+				"deliveryFee", "10000")
+		);
+
+		assertNotNull(result);
+		assertEquals(order.getId(), result.getId());
+		assertEquals(PaymentStatus.PENDING.getValue(), result.getStatus());
+		verify(paymentRepository, times(1)).save(any(Payment.class));
+	}
+
+	@Test
+	void testAddPaymentCashOnDeliveryInvalidData() {
+		Order order = orders.get(1);
+		doReturn(null).when(paymentRepository).findById(order.getId());
+
+		Payment result = paymentService.addPayment(
+				order,
+				PaymentMethod.CASH_ON_DELIVERY.getValue(),
+				Map.of("invalidKey", "invalidValue")
+		);
+
+		assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+	}
+
+	@Test
+	void testAddPaymentCashOnDeliveryPartiallInvalidData() {
+		Order order = orders.get(1);
+		doReturn(null).when(paymentRepository).findById(order.getId());
+
+		Payment result = paymentService.addPayment(
+				order,
+				PaymentMethod.CASH_ON_DELIVERY.getValue(),
+				Map.of("address", "Jl. Merdeka No. 123")
+		);
+
+		assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+	}
+
+	@Test
 	void testUpdateStatus() {
         Payment payment = payments.get(1);
         doReturn(payment).when(paymentRepository).findById(payment.getId());
