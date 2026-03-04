@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import id.ac.ui.cs.advprog.eshop.enums.PaymentMethod;
 import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import id.ac.ui.cs.advprog.eshop.model.Order;
 import id.ac.ui.cs.advprog.eshop.model.Payment;
@@ -18,12 +19,28 @@ public class PaymentServiceImpl implements PaymentService {
         if (order == null || method == null || paymentData == null) {
             throw new IllegalArgumentException();
         }
-        if (paymentRepository.findById(order.getId()) == null) {
-            Payment payment = new Payment(order.getId(), method, PaymentStatus.PENDING.getValue(), paymentData);
-            paymentRepository.save(payment);
-            return payment;
+        if (paymentRepository.findById(order.getId()) != null) {
+            return null;
         }
-        return null;
+
+        String paymentStatus = PaymentStatus.PENDING.getValue();
+        if (PaymentMethod.VOUCHER.getValue().equals(method) && !isValidVoucherData(paymentData)) {
+            paymentStatus = PaymentStatus.REJECTED.getValue();
+        }
+
+        Payment payment = new Payment(order.getId(), method, paymentStatus, paymentData);
+        paymentRepository.save(payment);
+        return payment;
+    }
+
+    private boolean isValidVoucherData(Map<String, String> paymentData) {
+        String voucherCode = paymentData.get("voucherCode");
+        if (voucherCode == null) {
+            return false;
+        }
+
+        String regex = "^ESHOP(?=(?:\\D*\\d){8}\\D*$).{11}$";
+        return voucherCode.matches(regex);
     }
 
     public Payment setStatus(Payment payment, String status) {
