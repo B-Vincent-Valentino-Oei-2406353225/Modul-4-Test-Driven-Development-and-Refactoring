@@ -26,6 +26,8 @@ public class PaymentServiceImpl implements PaymentService {
         String paymentStatus = PaymentStatus.PENDING.getValue();
         if (PaymentMethod.VOUCHER.getValue().equals(method) && !isValidVoucherData(paymentData)) {
             paymentStatus = PaymentStatus.REJECTED.getValue();
+        } else if (PaymentMethod.CASH_ON_DELIVERY.getValue().equals(method) && !isValidCashOnDeliveryData(paymentData)) {
+            paymentStatus = PaymentStatus.REJECTED.getValue();
         }
 
         Payment payment = new Payment(order.getId(), method, paymentStatus, paymentData);
@@ -41,6 +43,12 @@ public class PaymentServiceImpl implements PaymentService {
 
         String regex = "^ESHOP(?=(?:\\D*\\d){8}\\D*$).{11}$";
         return voucherCode.matches(regex);
+    }
+
+    private boolean isValidCashOnDeliveryData(Map<String, String> paymentData) {
+        String address = paymentData.get("address");
+        String deliveryFee = paymentData.get("deliveryFee");
+        return address != null && !address.isEmpty() && deliveryFee != null && !deliveryFee.isEmpty();
     }
 
     public Payment setStatus(Payment payment, String status) {
