@@ -6,11 +6,14 @@ import id.ac.ui.cs.advprog.eshop.model.Order;
 import id.ac.ui.cs.advprog.eshop.model.Payment;
 import id.ac.ui.cs.advprog.eshop.model.Product;
 import id.ac.ui.cs.advprog.eshop.repository.PaymentRepository;
+import id.ac.ui.cs.advprog.eshop.service.payment.CashOnDeliveryStrategy;
+import id.ac.ui.cs.advprog.eshop.service.payment.DummyStrategy;
+import id.ac.ui.cs.advprog.eshop.service.payment.PaymentStrategy;
+import id.ac.ui.cs.advprog.eshop.service.payment.VoucherStrategy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -27,7 +30,6 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class PaymentServiceImplTest {
 
-	@InjectMocks
 	PaymentServiceImpl paymentService;
 
 	@Mock
@@ -38,6 +40,13 @@ public class PaymentServiceImplTest {
 
 	@BeforeEach
 	void setUp() {
+		List<PaymentStrategy> paymentStrategies = List.of(
+				new DummyStrategy(),
+				new VoucherStrategy(),
+				new CashOnDeliveryStrategy()
+		);
+		paymentService = new PaymentServiceImpl(paymentRepository, paymentStrategies);
+
 		List<Product> products = new ArrayList<>();
 		Product product1 = new Product();
 		product1.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6");
