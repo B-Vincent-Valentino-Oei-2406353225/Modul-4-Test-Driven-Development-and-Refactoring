@@ -6,7 +6,8 @@ import lombok.Getter;
 
 @Getter
 public enum PaymentMethod {
-    INITIAL("INITIAL", List.of("cardNumber"));
+    INITIAL("INITIAL", List.of()),
+    VOUCHER("VOUCHER", List.of());
 
     private final String value;
     private final List<String> requiredPaymentData;
