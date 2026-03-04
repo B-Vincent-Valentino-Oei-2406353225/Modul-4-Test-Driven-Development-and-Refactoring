@@ -92,6 +92,51 @@ public class PaymentServiceImplTest {
 		verify(paymentRepository, times(0)).save(any(Payment.class));
 	}
 
+    @Test
+    void testAddPaymentVoucher() {
+        Order order = orders.get(1);
+        doReturn(null).when(paymentRepository).findById(order.getId());
+
+        Payment result = paymentService.addPayment(
+                order,
+                PaymentMethod.VOUCHER.getValue(),
+                Map.of("voucherCode", "ESHOP1234ABC5678")
+        );
+
+        assertNotNull(result);
+        assertEquals(order.getId(), result.getId());
+        assertEquals(PaymentStatus.PENDING.getValue(), result.getStatus());
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentVoucherInvalidDataKey() {
+        Order order = orders.get(1);
+        doReturn(null).when(paymentRepository).findById(order.getId());
+
+        Payment result = paymentService.addPayment(
+            order,
+            PaymentMethod.VOUCHER.getValue(),
+            Map.of("invalidKey", "ESHOP1234ABC5678")
+        );
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+    }
+
+    @Test
+    void testAddPaymentVoucherInvalidDataValue() {
+        Order order = orders.get(1);
+        doReturn(null).when(paymentRepository).findById(order.getId());
+
+        Payment result = paymentService.addPayment(
+            order,
+            PaymentMethod.VOUCHER.getValue(),
+            Map.of("voucherCode", "INVALID_VOUCHER")
+        );
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+    }
+
 	@Test
 	void testUpdateStatus() {
         Payment payment = payments.get(1);
